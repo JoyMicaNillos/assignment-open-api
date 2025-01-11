@@ -14,10 +14,6 @@ export class InstagramService {
    * @returns The search results from the API.
    */
   async searchUsers(searchQuery: string): Promise<any> {
-    if (!searchQuery || typeof searchQuery !== 'string' || searchQuery.trim().length === 0) {
-      throw new HttpException('Invalid search query', 400);
-    }
-
     try {
       const response = await axios.get(`${this.baseUrl}/v1/search_users`, {
         headers: {
@@ -26,18 +22,29 @@ export class InstagramService {
         },
         params: { search_query: searchQuery },
       });
-
+  
+      // Transform raw data into an organized format
+      const users = response.data?.data?.items.map((user: any) => ({
+        fullName: user.full_name || "N/A",
+        username: user.username,
+        profilePicture: user.profile_pic_url,
+        isPrivate: user.is_private ?? false,
+        isVerified: user.is_verified ?? false,
+      }));
+  
       return {
         status: 'success',
-        data: response.data,
+        totalResults: response.data?.data?.count || 0,
+        users, // Return transformed users
       };
     } catch (error) {
       this.logger.error(`Error fetching users for query "${searchQuery}"`, error.stack);
-
+  
       throw new HttpException(
         `Error fetching users: ${error.response?.data?.message || error.message}`,
         error.response?.status || 500,
       );
     }
   }
+  
 }
