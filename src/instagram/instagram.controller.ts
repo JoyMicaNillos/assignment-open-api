@@ -15,4 +15,14 @@ export class InstagramController {
     }
     return await this.instagramService.searchUsers(query);
   }
+
+  @ApiQuery({ name: 'username', required: true, description: 'Instagram username or ID or URL' })
+  @Get('user-info')
+  async getUserInfo(@Query('username') username: string) {
+    if (!username) {
+      throw new BadRequestException('Username parameter is required');
+    }
+    return await this.instagramService.getUserInfo(username);
+  }
+
 }

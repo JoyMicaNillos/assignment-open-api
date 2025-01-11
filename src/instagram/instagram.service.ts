@@ -47,4 +47,24 @@ export class InstagramService {
     }
   }
   
+  async getUserInfo(usernameOrIdOrUrl: string): Promise<any> {
+    try {
+      const response = await axios.get(`${this.baseUrl}/v1/info`, {
+        headers: {
+          'X-Rapidapi-Key': this.rapidApiKey,
+          'X-Rapidapi-Host': this.rapidApiHost,
+        },
+        params: { username_or_id_or_url: usernameOrIdOrUrl },
+      });
+      return {
+        status: 'success',
+        data: response.data,
+      };
+    } catch (error) {
+      throw new HttpException(
+        `Error fetching user info: ${error.response?.data?.message || error.message}`,
+        error.response?.status || 500,
+      );
+    }
+  }
 }
