@@ -56,9 +56,26 @@ export class InstagramService {
         },
         params: { username_or_id_or_url: usernameOrIdOrUrl },
       });
+  
+      // Extract relevant data from the raw response
+      const userData = response.data?.data;
+  
+      // Customized response with only important details
       return {
         status: 'success',
-        data: response.data,
+        data: {
+          username: userData?.username || 'N/A',
+          fullName: userData?.full_name || 'N/A',
+          profilePicture: userData?.profile_pic_url || 'N/A',
+          bio: userData?.biography || 'No bio available',
+          followers: userData?.follower_count || 0,
+          following: userData?.following_count || 0,
+          isVerified: userData?.is_verified || false,
+          isPrivate: userData?.is_private || false,
+          externalUrl: userData?.external_url || 'N/A',
+          category: userData?.category || 'N/A',
+          mediaCount: userData?.media_count || 0,
+        },
       };
     } catch (error) {
       throw new HttpException(
@@ -67,4 +84,5 @@ export class InstagramService {
       );
     }
   }
+  
 }
